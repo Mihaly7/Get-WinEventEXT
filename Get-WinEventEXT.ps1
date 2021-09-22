@@ -7,8 +7,8 @@ Function Get-WinEventEXT
          [Parameter(Mandatory=$true)]
             [string]$Eventlogname = (Read-Host "Logname (* for wildcard)"), 
             [string]$Date = (Read-Host  "Start date (format should be MM/DD/YYYY)"), 
-            [string]$StartTime = (Read-Host "Start time (H:MM:SS)"),
-            [string]$EndTime  = (Read-Host  "End time (H:MM:SS)"),
+            [string]$StartTime = (Read-Host "Start time (HH:MM:SS)"),
+            [string]$Duration  = (Read-Host  "Duration (HH:MM:SS)"),
 
             
         [Parameter(Mandatory=$false)]
@@ -19,10 +19,19 @@ Function Get-WinEventEXT
         )    
     
 # Date and time conversion
-$startdate = $date+" "+$starttime
-$enddate = $date+" "+$endtime
-$starttime = Get-Date $startdate
-$endTime = Get-Date $enddate
+$StartDate = $Date+" "+$StartTime
+$starttime = Get-Date $StartDate
+If ($Duration -contains ":")
+    {
+    $CDuration = $Duration.split(':')
+    $endTime = (Get-Date $StartDate).Add((new-timespan -hour $CDuration[0] -Minutes $cduration[1] -Seconds $cduration[2]).Ticks)
+    }
+Else
+    {
+    $endTime = (Get-Date $Startdate).Addhours($Duration)
+    }
+
+
 
 # Default event level: Informational included
 $maxlevel = 4

@@ -7,7 +7,7 @@ Function Get-WinEventEXT
          [Parameter(Mandatory=$true)]
             [string]$Eventlogname = (Read-Host "Logname (* for wildcard)"), 
             [string]$Date = (Read-Host  "Start date (format should be MM/DD/YYYY)"), 
-            [string]$StartTime = (Read-Host "Start time (HH:MM:SS)"),
+            [string]$Time = (Read-Host "Start time (HH:MM:SS)"),
             [string]$Duration  = (Read-Host  "Duration (HH:MM:SS)"),
 
             
@@ -19,16 +19,15 @@ Function Get-WinEventEXT
         )    
     
 # Date and time conversion
-$StartDate = $Date+" "+$StartTime
-$starttime = Get-Date $StartDate
-If ($Duration -contains ":")
+$StartTime = $Date+" "+$Time | Get-date
+If ($Duration -like "*:*")
     {
     $CDuration = $Duration.split(':')
-    $endTime = (Get-Date $StartDate).Add((new-timespan -hour $CDuration[0] -Minutes $cduration[1] -Seconds $cduration[2]).Ticks)
+    $endTime = ($StartTime).Add((new-timespan -hour $CDuration[0] -Minutes $CDuration[1] -Seconds $CDuration[2]).Ticks)
     }
 Else
     {
-    $endTime = (Get-Date $Startdate).Addhours($Duration)
+    $endTime = ($StartTime).Addhours($Duration)
     }
 
 
@@ -53,7 +52,8 @@ $Evtxfiles = Get-ChildItem -path $path -filter "$EventLogName*" -Include *.evtx 
 # Show actual log file
 
     ((Get-WinEvent -Path $Evtxfile.FullName -MaxEvents 10 ) | Where machinename -ne $null | select Machinename,logname)[0]
-    Write-Host "Log location: $Evtxfile"
+    
+    Write-Host "Log location: $Evtxfile `n"
 
 # Read log
 

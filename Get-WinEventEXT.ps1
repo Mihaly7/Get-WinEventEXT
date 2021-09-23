@@ -15,24 +15,53 @@ Function Get-WinEventEXT
             [string]$Path = (Get-Location).path,
             [array]$EventId,
             [bool]$FilterInformation = $false,
-            [bool]$Detailed = $false
+            [bool]$Detailed = $false,
+            [bool]$Backwards = $false
         )    
     
 # Date and time conversion
+
 $StartTime = $Date+" "+$Time | Get-date
+
+If ($Backwards -ne $false)
+    {
+    $M = "-"
+    }
+Else 
+    {
+    $M = $null
+    }
+
+#Duration calculator
+
 If ($Duration -like "*:*")
     {
     $CDuration = $Duration.split(':')
-    $endTime = ($StartTime).Add((new-timespan -hour $CDuration[0] -Minutes $CDuration[1] -Seconds $CDuration[2]).Ticks)
+    $endTime = ($StartTime).AddSeconds(($m+(new-timespan -hour $CDuration[0] -Minutes $CDuration[1] -Seconds $CDuration[2]).TotalSeconds).tostring())
+    }
+
+Else
+    {
+    $endTime = ($StartTime).Addhours($m+($Duration).tostring())
+    }
+
+#$Backward Check
+
+If ($backwards -eq $true) 
+    {
+    $sTime = $endTime
+    $eTime = $StartTime
     }
 Else
     {
-    $endTime = ($StartTime).Addhours($Duration)
-    }
+    $sTime = $StartTime
+    $eTime = $endTime
+    }    
 
 
 
 # Default event level: Informational included
+# Information level filter
 $maxlevel = 4
 
 if ($Filterinformation -eq $true)
@@ -61,15 +90,15 @@ $Evtxfiles = Get-ChildItem -path $path -filter "$EventLogName*" -Include *.evtx 
             {
             $output =  Get-winevent -FilterHashtable @{Path=$Evtxfile.FullName;
             Id=$EventId;
-            StartTime = $starttime;
-            EndTime = $endTime} -ErrorAction SilentlyContinue  | where {$_.Level -gt 0 -and $_.Level -le $maxlevel } 
+            StartTime = $sTime;
+            EndTime = $eTime} -ErrorAction SilentlyContinue  | where {$_.Level -gt 0 -and $_.Level -le $maxlevel } 
             }
 
         else
             {
             $output = Get-winevent -FilterHashtable @{Path=$Evtxfile.FullName;
-            StartTime = $starttime;
-            EndTime = $endTime} -ErrorAction SilentlyContinue  |  where {$_.Level -gt 0 -and $_.Level -le $maxlevel }
+            StartTime = $sTime;
+            EndTime = $eTime} -ErrorAction SilentlyContinue  |  where {$_.Level -gt 0 -and $_.Level -le $maxlevel }
             }
 # Write log entries to host
     

@@ -4,7 +4,7 @@ A small extension to Powershell Cmd-Let Get-WinEvent. That short script helps to
 
 Example usage:
 
-Get-WinEventEXT -Path D:\!Cases\zzzzz\2021-09-22\info\ -Eventlogname *system* -Date 09/25/2021 -Time 21:00:00 -Duration 00:10:00 -FilterInformation 0 -Backwards 0 -Detailed 1
+Get-WinEventEXT -Path D:\Logs\ -Eventlogname *system* -Date 09/25/2021 -Time 21:00:00 -Duration 00:10:00 -FilterInformation 0 -Backwards 0 -Detailed 1
 
 Parameters:
 

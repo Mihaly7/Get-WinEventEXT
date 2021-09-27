@@ -23,3 +23,5 @@ Parameters:
 -Backwards : Search backwards from time of start
 
 -Detailed : Show meassage details with format-list
+
+-EventID : search for eventID(s), separate multiple IDs with ','

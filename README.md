@@ -9,10 +9,17 @@ Get-WinEventEXT -Path D:\!Cases\zzzzz\2021-09-22\info\ -Eventlogname *system* -D
 Parameters:
 
 -Path : Folder where to search for events, search is recursive.
+
 -Eventlogname : log file's name accepts wildcards like *clustering-operational*
+
 -Date : Day of start the search
+
 -Time : Time of start
+
 -Duration: time window of search single digit is hours or you can use HH:MM:SS format
+
 -FilterInformation: Filters out informational events.
+
 -Backwards : Search backwards from time of start
+
 -Detailed : Show meassage details with format-list

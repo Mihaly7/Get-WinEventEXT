@@ -13,16 +13,15 @@ Function Get-WinEventEXT
             
         [Parameter(Mandatory=$false)]
             [string]$Path = (Get-Location).path,
-            [array]$EventId,
+            [array]$EventId = $null,
+            [array]$ProviderName = $null,
             [bool]$FilterInformation = $false,
             [bool]$Detailed = $false,
             [bool]$Backwards = $false
         )    
     
 # Date and time conversion
-
 $StartTime = $Date+" "+$Time | Get-date
-
 If ($Backwards -ne $false)
     {
     $M = "-"
@@ -73,6 +72,7 @@ if ($Filterinformation -eq $true)
 
 $Evtxfiles = Get-ChildItem -path $path -filter "$EventLogName*" -Include *.evtx -Recurse
 
+
 # Read logs
 
     foreach($Evtxfile in $Evtxfiles)
@@ -84,22 +84,24 @@ $Evtxfiles = Get-ChildItem -path $path -filter "$EventLogName*" -Include *.evtx 
     
     Write-Host "Log location: $Evtxfile `n"
 
+
+#create Hashtable
+
+$Filter = @{Path=$Evtxfile.FullName;Starttime = $sTime; Endtime = $eTime}
+
+If ($EventId -ne $null)
+    {
+    $Filter = $Filter+@{ID= $EventID}
+    }
+If ($ProviderName -ne $null)
+    {
+    $Filter = $Filter+@{ProviderName= $ProviderName}
+    }
+
 # Read log
 
-        if ($EventId.count -ge 1)
-            {
-            $output =  Get-winevent -FilterHashtable @{Path=$Evtxfile.FullName;
-            Id=$EventId;
-            StartTime = $sTime;
-            EndTime = $eTime} -ErrorAction SilentlyContinue  | where {$_.Level -gt 0 -and $_.Level -le $maxlevel } 
-            }
-
-        else
-            {
-            $output = Get-winevent -FilterHashtable @{Path=$Evtxfile.FullName;
-            StartTime = $sTime;
-            EndTime = $eTime} -ErrorAction SilentlyContinue  |  where {$_.Level -gt 0 -and $_.Level -le $maxlevel }
-            }
+            $output =  Get-winevent -FilterHashtable $Filter -ErrorAction SilentlyContinue  | where {$_.Level -gt 0 -and $_.Level -le $maxlevel}   
+                        
 # Write log entries to host
     
         if ($detailed -ne $false)
@@ -111,6 +113,6 @@ $Evtxfiles = Get-ChildItem -path $path -filter "$EventLogName*" -Include *.evtx 
             $output | Sort-Object TimeCreated | Format-Table Timecreated,Providername,Id,Leveldisplayname,Message 
             }
     }
-}
+ }
 
 

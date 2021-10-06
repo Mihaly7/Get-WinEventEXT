@@ -25,3 +25,5 @@ Parameters:
 -Detailed : Show meassage details with format-list
 
 -EventID : search for eventID(s), separate multiple IDs with ','
+
+-ProviderName : Eventprovider's name, separate multiple providers with ','. Support wildcars (*)

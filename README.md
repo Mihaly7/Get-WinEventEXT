@@ -27,3 +27,5 @@ Parameters:
 -EventID : search for eventID(s), separate multiple IDs with ','
 
 -ProviderName : Eventprovider's name, separate multiple providers with ','. Support wildcars (*)
+
+-Message : Filter events by the given message. Example: "cluster" will list events only which have cluster in the message.

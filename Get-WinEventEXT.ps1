@@ -5,7 +5,7 @@ Function Get-WinEventEXT
         Param
         (
          [Parameter(Mandatory=$true)]
-            [string]$Eventlogname = (Read-Host "Logname (* for wildcard)"), 
+            [string]$Logname = (Read-Host "Logname (* for wildcard)"), 
             [string]$Date = (Read-Host  "Start date (format should be MM/DD/YYYY)"), 
             [string]$Time = (Read-Host "Start time (HH:MM:SS)"),
             [string]$Duration  = (Read-Host  "Duration (HH:MM:SS)"),
@@ -13,6 +13,7 @@ Function Get-WinEventEXT
             
         [Parameter(Mandatory=$false)]
             [string]$Path = (Get-Location).path,
+            [string]$Message = $null,
             [array]$EventId = $null,
             [array]$ProviderName = $null,
             [bool]$FilterInformation = $false,
@@ -70,7 +71,7 @@ if ($Filterinformation -eq $true)
 
 # Gather evtx files
 
-$Evtxfiles = Get-ChildItem -path $path -filter "$EventLogName*" -Include *.evtx -Recurse
+$Evtxfiles = Get-ChildItem -path $path -filter "$LogName*" -Include *.evtx -Recurse
 
 
 # Read logs
@@ -98,10 +99,16 @@ If ($ProviderName -ne $null)
     $Filter = $Filter+@{ProviderName= $ProviderName}
     }
 
+
+
 # Read log
 
             $output =  Get-winevent -FilterHashtable $Filter -ErrorAction SilentlyContinue  | where {$_.Level -gt 0 -and $_.Level -le $maxlevel}   
                         
+# Filter by message
+            
+            $output = $output | where message -like "*$message*"
+
 # Write log entries to host
     
         if ($detailed -ne $false)

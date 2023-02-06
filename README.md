@@ -10,7 +10,7 @@ Parameters:
 
 -Path : Folder where to search for events, search is recursive.
 
--Eventlogname : log file's name accepts wildcards like *clustering-operational*
+-Logname : log file's name accepts wildcards like *clustering-operational*
 
 -Date : Day of start the search
 
